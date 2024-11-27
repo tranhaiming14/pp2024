@@ -7,7 +7,7 @@ class Course:
     def __init__(self, course_id, name):
         self.course_id = course_id
         self.name = name
-        self.marks = {}  # Marks will be stored as {student_id: mark}
+        self.marks = {}  
 
 class StudentManager:
     def __init__(self):
