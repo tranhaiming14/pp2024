@@ -1,6 +1,6 @@
 import math
 import numpy as np
-
+# Changed mark dictionary from Course to Student for a more intuitive understanding
 class Student:
     def __init__(self, student_id, name):
         self.student_id = student_id
