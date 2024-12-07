@@ -1,94 +1,147 @@
 import math
-import numpy as np
-# Changed mark dictionary from Course to Student for a more intuitive understanding
+import curses
 class Student:
     def __init__(self, student_id, name):
         self.student_id = student_id
         self.name = name
-        self.marks = {}  
+        self.marks = {}
         self.gpa = 0.0
+
 class Course:
     def __init__(self, course_id, name, credits):
         self.course_id = course_id
         self.name = name
         self.credits = credits
+
 class StudentManager:
-    def __init__(self):
+    def __init__(self, stdscr):
         self.students = []
         self.courses = []
+        self.stdscr = stdscr
 
     def input_students(self):
-        num_students = int(input("Enter the number of students: "))
+        self.stdscr.clear()
+        self.stdscr.addstr("Enter the number of students: ")
+        curses.echo()
+        num_students = int(self.stdscr.getstr().decode())
         for _ in range(num_students):
             self.input_student_info()
 
     def input_student_info(self):
-        student_id = input("Enter the student ID here: ")
-        name = input("Enter student's name: ")
+        self.stdscr.clear()
+        self.stdscr.addstr("Enter the student ID here: ")
+        curses.echo()
+        student_id = self.stdscr.getstr().decode()
+        self.stdscr.addstr("Enter student's name: ")
+        name = self.stdscr.getstr().decode()
         student = Student(student_id, name)
         self.students.append(student)
 
     def input_courses(self):
-        num_courses = int(input("Enter the number of courses: "))
+        self.stdscr.clear()
+        self.stdscr.addstr("Enter the number of courses: ")
+        curses.echo()
+        num_courses = int(self.stdscr.getstr().decode())
         for _ in range(num_courses):
             self.input_course_info()
 
     def input_course_info(self):
-        course_id = input("Enter the course ID here: ")
-        name = input("Enter course name: ")
-        while any(course_id == course.course_id for course in self.courses):
-            print("Course id not valid!")
-            course_id = input("Enter the course ID here: ")
-        credits = input("Enter the number of credits: ")
+        self.stdscr.clear()
+        self.stdscr.addstr("Enter the course ID here: ")
+        curses.echo()
+        course_id = self.stdscr.getstr().decode()
+        self.stdscr.addstr("Enter course name: ")
+        name = self.stdscr.getstr().decode()
+        self.stdscr.addstr("Enter the number of credits: ")
+        credits = float(self.stdscr.getstr().decode())
         course = Course(course_id, name, credits)
         self.courses.append(course)
 
     def input_marks(self):
         for student in self.students:
-            print(f"Enter the mark for student {student.name}:")
+            self.stdscr.clear()
+            self.stdscr.addstr(f"Enter the marks for student {student.name}:\n")
             for course in self.courses:
-                mark = float(input(f"Enter the mark for course {course.name}: "))
+                self.stdscr.addstr(f"Enter the mark for course {course.name}: ")
+                curses.echo()
+                mark = float(self.stdscr.getstr().decode())
                 mark = math.floor(mark * 10) / 10.0
                 student.marks[course.course_id] = mark
-    def calculate_gpa(self):
-        for student in self.students:
-            total_credits = 0
-            total_weighted_marks = 0
+
+    def calculate_gpa(self, students):
+        total_credits = 0
+        total_weighted_marks = 0
+        for student in students:
             for course in self.courses:
                 if course.course_id in student.marks:
                     mark = student.marks[course.course_id]
                     total_weighted_marks += mark * course.credits
                     total_credits += course.credits
             student.gpa = total_weighted_marks / total_credits if total_credits > 0 else 0
-    def sort_students_by_gpa(self):
-        self.students.sort(key=lambda student: student.gpa, reverse=True)
 
-    def display_students_by_gpa(self):
-        self.sort_students_by_gpa()
+    def display_gpas(self):
+        self.stdscr.clear()
+        self.students.sort(key=lambda student: student.gpa, reverse=True)
         for student in self.students:
-            gpa = self.gpa
-            print(f"Student {student.name} has a GPA of {gpa:.2f}")
+            self.stdscr.addstr(f"Student {student.name} has a GPA of {student.gpa}\n")
+        self.stdscr.addstr("\nPress any key to continue")
+        self.stdscr.refresh()
+        self.stdscr.getch()
 
     def display_marks(self):
         while True:
-            student_id = input("Enter the student ID to view marks: ")
+            self.stdscr.clear()
+            self.stdscr.addstr("Enter the student ID to view marks (type 'out' to exit): ")
+            curses.echo()
+            student_id = self.stdscr.getstr().decode()
             if student_id == "out":
                 break
             student = next((s for s in self.students if s.student_id == student_id), None)
             if student:
                 for course in self.courses:
                     mark = student.marks.get(course.course_id, "No marks")
-                    print(f"Student {student.name} has {mark} mark in course {course.course_id}")
+                    self.stdscr.addstr(f"Student {student.name} has {mark} mark in course {course.course_id}\n")
             else:
-                print("Student not found.")
+                self.stdscr.addstr("Student not found.\n")
+            self.stdscr.addstr("\nPress any key to continue...")
+            self.stdscr.refresh()
+            self.stdscr.getch()
 
-def main():
-    manager = StudentManager()
-    manager.input_students()
-    manager.input_courses()
-    manager.input_marks()
-    manager.calculate_gpa()
-    manager.display_marks()
-    manager.display_students_by_gpa()
+def main(stdscr):
+    curses.cbreak()
+    stdscr.clear()
+    stdscr.refresh()
+    manager = StudentManager(stdscr)
+
+    while True:
+        stdscr.clear()
+        stdscr.addstr("HaiMinhs Student Management System\n")
+        stdscr.addstr("1. Input Students\n")
+        stdscr.addstr("2. Input Courses\n")
+        stdscr.addstr("3. Input Marks\n")
+        stdscr.addstr("4. Display GPAs\n")
+        stdscr.addstr("5. Display Marks\n")
+        stdscr.addstr("6. Exit\n")
+        stdscr.addstr("Choose an option: ")
+        curses.echo()
+        choice = int(stdscr.getstr().decode())
+
+        if choice == 1:
+            manager.input_students()
+        elif choice == 2:
+            manager.input_courses()
+        elif choice == 3:
+            manager.input_marks()
+        elif choice == 4:
+            manager.display_gpas()
+        elif choice == 5:
+            manager.display_marks()
+        elif choice == 6:
+            break
+        else:
+            stdscr.addstr("Invalid option.")
+            stdscr.refresh()
+            stdscr.getch()
+
 if __name__ == "__main__":
-    main()
+    curses.wrapper(main)
