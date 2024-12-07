@@ -8,7 +8,19 @@ class OutputManager:
         self.students = students
         self.courses = courses
 
+    def calculate_gpa(self, students):
+        total_credits = 0
+        total_weighted_marks = 0
+        for student in students:
+            for course in self.courses:
+                if course.course_id in student.marks:
+                    mark = student.marks[course.course_id]
+                    total_weighted_marks += mark * course.credits
+                    total_credits += course.credits
+            student.gpa = total_weighted_marks / total_credits if total_credits > 0 else 0
+
     def display_gpas(self):
+        self.calculate_gpa(self.students)
         self.stdscr.clear()
         self.students.sort(key=lambda student: student.gpa, reverse=True)
         for student in self.students:
@@ -21,7 +33,6 @@ class OutputManager:
         while True:
             self.stdscr.clear()
             self.stdscr.addstr("Enter the student ID to view marks (type 'out' to exit): ")
-            curses.echo()
             student_id = self.stdscr.getstr().decode()
             if student_id == "out":
                 break

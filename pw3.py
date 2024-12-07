@@ -22,7 +22,6 @@ class StudentManager:
     def input_students(self):
         self.stdscr.clear()
         self.stdscr.addstr("Enter the number of students: ")
-        curses.echo()
         num_students = int(self.stdscr.getstr().decode())
         for _ in range(num_students):
             self.input_student_info()
@@ -30,7 +29,6 @@ class StudentManager:
     def input_student_info(self):
         self.stdscr.clear()
         self.stdscr.addstr("Enter the student ID here: ")
-        curses.echo()
         student_id = self.stdscr.getstr().decode()
         self.stdscr.addstr("Enter student's name: ")
         name = self.stdscr.getstr().decode()
@@ -40,7 +38,6 @@ class StudentManager:
     def input_courses(self):
         self.stdscr.clear()
         self.stdscr.addstr("Enter the number of courses: ")
-        curses.echo()
         num_courses = int(self.stdscr.getstr().decode())
         for _ in range(num_courses):
             self.input_course_info()
@@ -48,7 +45,6 @@ class StudentManager:
     def input_course_info(self):
         self.stdscr.clear()
         self.stdscr.addstr("Enter the course ID here: ")
-        curses.echo()
         course_id = self.stdscr.getstr().decode()
         self.stdscr.addstr("Enter course name: ")
         name = self.stdscr.getstr().decode()
@@ -63,7 +59,6 @@ class StudentManager:
             self.stdscr.addstr(f"Enter the marks for student {student.name}:\n")
             for course in self.courses:
                 self.stdscr.addstr(f"Enter the mark for course {course.name}: ")
-                curses.echo()
                 mark = float(self.stdscr.getstr().decode())
                 mark = math.floor(mark * 10) / 10.0
                 student.marks[course.course_id] = mark
@@ -80,6 +75,7 @@ class StudentManager:
             student.gpa = total_weighted_marks / total_credits if total_credits > 0 else 0
 
     def display_gpas(self):
+        self.calculate_gpa(self.students)
         self.stdscr.clear()
         self.students.sort(key=lambda student: student.gpa, reverse=True)
         for student in self.students:
@@ -92,7 +88,6 @@ class StudentManager:
         while True:
             self.stdscr.clear()
             self.stdscr.addstr("Enter the student ID to view marks (type 'out' to exit): ")
-            curses.echo()
             student_id = self.stdscr.getstr().decode()
             if student_id == "out":
                 break

@@ -11,7 +11,6 @@ class InputManager:
     def input_students(self):
         self.stdscr.clear()
         self.stdscr.addstr("Enter the number of students: ")
-        curses.echo()
         num_students = int(self.stdscr.getstr().decode())
         for _ in range(num_students):
             self.input_student_info()
@@ -19,7 +18,6 @@ class InputManager:
     def input_student_info(self):
         self.stdscr.clear()
         self.stdscr.addstr("Enter the student ID here: ")
-        curses.echo()
         student_id = self.stdscr.getstr().decode()
         self.stdscr.addstr("Enter student's name: ")
         name = self.stdscr.getstr().decode()
@@ -29,7 +27,6 @@ class InputManager:
     def input_courses(self):
         self.stdscr.clear()
         self.stdscr.addstr("Enter the number of courses: ")
-        curses.echo()
         num_courses = int(self.stdscr.getstr().decode())
         for _ in range(num_courses):
             self.input_course_info()
@@ -37,7 +34,6 @@ class InputManager:
     def input_course_info(self):
         self.stdscr.clear()
         self.stdscr.addstr("Enter the course ID here: ")
-        curses.echo()
         course_id = self.stdscr.getstr().decode()
         self.stdscr.addstr("Enter course name: ")
         name = self.stdscr.getstr().decode()
